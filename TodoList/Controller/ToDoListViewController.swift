@@ -12,28 +12,18 @@ class ToDoListViewController: UITableViewController {
     
     var itemArray = [Item]()
     
-    var defaultArrayKey = "ToDoListArray"
-    var defaults = UserDefaults.standard
+    //use fileManager to store the default array
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let newItem = Item()
-        newItem.title = "Find Mike"
-        itemArray.append(newItem)
-        
-        let newItem2 = Item()
-        newItem2.title = "Eat Pie"
-        itemArray.append(newItem2)
-        
-        let newItem3 = Item()
-        newItem3.title = "Go picnic"
-        itemArray.append(newItem3)
-        
         //Load default array saved in phone - since the data type is not specified when set default value ,therefore needs to downcasting to [string]
-        if let items = defaults.array(forKey: defaultArrayKey) as? [Item] {
-            itemArray = items
-        }
+//        if let items = defaults.array(forKey: defaultArrayKey) as? [Item] {
+//            itemArray = items
+//        }
+        
+        loadItems()
         
     }
 
@@ -79,7 +69,7 @@ class ToDoListViewController: UITableViewController {
 //            itemArray[indexPath.row].done = false
 //        }
         
-        tableView.reloadData()
+        saveItems()
         
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -101,12 +91,11 @@ class ToDoListViewController: UITableViewController {
             print(newItem.title)
             
             self.itemArray.append(newItem)
-            print(self.itemArray)
             
-            //Set a default array(Any? - means data type not specified) using specific key
-            self.defaults.set(self.itemArray, forKey: self.defaultArrayKey)
+            //Set a default array(Any? - means data type not specified) using specific key XXXXXX
+//            self.defaults.set(self.itemArray, forKey: self.defaultArrayKey)
             
-            self.tableView.reloadData()
+            self.saveItems()
         }
         
         alert.addTextField { (alertTextField) in
@@ -120,7 +109,32 @@ class ToDoListViewController: UITableViewController {
         
     }
     
+    //MARK: Model Manipulating Methods
     
+    func saveItems() {
+        let encoder = PropertyListEncoder()
+        
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array, \(error)")
+        }
+        
+        tableView.reloadData()
+    }
+    
+    func loadItems() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("Error decoding item array, \(error)")
+            }
+            
+        }
+    }
 
 }
 
