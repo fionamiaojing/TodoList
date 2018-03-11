@@ -10,6 +10,7 @@
 		B2107334D6E9B04024F509F7 /* Pods_TodoList.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EC48DD0C5B224A3D6841EC0 /* Pods_TodoList.framework */; };
 		BA08774520534DCB006AABBD /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA08774420534DCB006AABBD /* Item.swift */; };
 		BA08774720534DDD006AABBD /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA08774620534DDD006AABBD /* Category.swift */; };
+		BA0877492054C6DA006AABBD /* SwipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0877482054C6DA006AABBD /* SwipeTableViewController.swift */; };
 		BA4160A620509CFF004D3BD2 /* CategoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4160A520509CFF004D3BD2 /* CategoryTableViewController.swift */; };
 		BADD3FF3204CD091008CF9FA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADD3FF2204CD091008CF9FA /* AppDelegate.swift */; };
 		BADD3FF5204CD091008CF9FA /* ToDoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADD3FF4204CD091008CF9FA /* ToDoListViewController.swift */; };
@@ -24,6 +25,7 @@
 		833FEC3293FFF6D88B6DA951 /* Pods-TodoList.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TodoList.release.xcconfig"; path = "Pods/Target Support Files/Pods-TodoList/Pods-TodoList.release.xcconfig"; sourceTree = "<group>"; };
 		BA08774420534DCB006AABBD /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		BA08774620534DDD006AABBD /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		BA0877482054C6DA006AABBD /* SwipeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeTableViewController.swift; sourceTree = "<group>"; };
 		BA4160A520509CFF004D3BD2 /* CategoryTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTableViewController.swift; sourceTree = "<group>"; };
 		BADD3FEF204CD091008CF9FA /* TodoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BADD3FF2204CD091008CF9FA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 		BADD4007204CF811008CF9FA /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				BA0877482054C6DA006AABBD /* SwipeTableViewController.swift */,
 				BA4160A520509CFF004D3BD2 /* CategoryTableViewController.swift */,
 				BADD3FF4204CD091008CF9FA /* ToDoListViewController.swift */,
 			);
@@ -225,13 +228,17 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-TodoList/Pods-TodoList-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/ChameleonFramework/ChameleonFramework.framework",
 				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
 				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/SwipeCellKit/SwipeCellKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ChameleonFramework.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwipeCellKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -264,6 +271,7 @@
 				BADD3FF5204CD091008CF9FA /* ToDoListViewController.swift in Sources */,
 				BADD3FF3204CD091008CF9FA /* AppDelegate.swift in Sources */,
 				BA4160A620509CFF004D3BD2 /* CategoryTableViewController.swift in Sources */,
+				BA0877492054C6DA006AABBD /* SwipeTableViewController.swift in Sources */,
 				BA08774720534DDD006AABBD /* Category.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

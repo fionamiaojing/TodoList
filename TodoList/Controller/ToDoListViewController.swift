@@ -8,12 +8,16 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
-class ToDoListViewController: UITableViewController {
+//need to change the class and module to Swipexxx and Swipekit to inherit the super class
+class ToDoListViewController: SwipeTableViewController {
     
     var toDoItems: Results<Item>?
     
     let realm = try! Realm()
+    
+    @IBOutlet weak var searchBar: UISearchBar!
     
     var selectedCategory : Category? {
         //function in the didSet{} will happend as soon as Category get selected
@@ -24,14 +28,49 @@ class ToDoListViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        tableView.separatorStyle = .none
         
-        //use fileManager to store the default array
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        
-        //Load default array saved in phone - since the data type is not specified when set default value ,therefore needs to downcasting to [string]
+//        //use fileManager to store the default array
+//        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+//
+//        //Load default array saved in phone - since the data type is not specified when set default value ,therefore needs to downcasting to [string]
 //        if let items = defaults.array(forKey: defaultArrayKey) as? [Item] {
 //            itemArray = items
 //        }
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        title = selectedCategory?.name
+        
+        guard let colorHex = selectedCategory?.color else {(fatalError())}
+        
+        updateNavBar(withHexCode: colorHex)
+       
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        updateNavBar(withHexCode: "FFCECC")
+    }
+    
+    
+    //MARK: - Nev Bar Setup Methods
+    
+    func updateNavBar(withHexCode colorHexCode: String) {
+        //use guard let if you don't need an else statement and 99% you think it won't fail
+        guard let navBar = navigationController?.navigationBar else {
+            fatalError("Navigation Controller does not exist")}
+        
+        guard let navBarColor = UIColor(hexString: colorHexCode) else {(fatalError())}
+        
+        navBar.barTintColor = navBarColor
+        navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
+        searchBar.barTintColor = navBarColor
+        navBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: ContrastColorOf(navBarColor, returnFlat: true)]
+        
         
     }
 
@@ -43,11 +82,16 @@ class ToDoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        //TableView reuses cells
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoListCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = toDoItems?[indexPath.row] {
             cell.textLabel?.text = item.title
+        
+            
+            if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(toDoItems!.count)) {
+                cell.backgroundColor = color
+                cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+            }
             
             //Ternary operator ==>
             //value = condition ? valueIfTrue : valueIfFalse
@@ -56,7 +100,6 @@ class ToDoListViewController: UITableViewController {
             cell.textLabel?.text = "No Items added"
         }
 
-        
         return cell
         
     }
@@ -69,7 +112,6 @@ class ToDoListViewController: UITableViewController {
         if let item = toDoItems?[indexPath.row] {
             do {
                 try realm.write {
-//                    realm.delete(item)
                     item.done = !item.done
                 }
             } catch {
@@ -78,15 +120,6 @@ class ToDoListViewController: UITableViewController {
         }
         
         tableView.reloadData()
-        
-        
-//        //remove item from permanent srore (must before the remove function; because the target item at the index of array will be removed upon the call of remove function, then the delete function cannot delete the same item from itemArray)
-//        context.delete(itemArray[indexPath.row])
-//        
-//        //remove the item from view
-//        itemArray.remove(at: indexPath.row)
-
-//        saveItems()
         
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -137,13 +170,25 @@ class ToDoListViewController: UITableViewController {
     
     //MARK: Model Manipulating Methods
     
-    
     //set default request as input; when you don't want input a parameter everytime, can set the default value to nil and add a ? mark means optional
     func loadItems() {
         
         toDoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         
         tableView.reloadData()
+    }
+    
+    //MARK: - delete data from Swipe
+    override func updateModel(at indexPath: IndexPath) {
+        if let itemTobeDeleted = toDoItems?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(itemTobeDeleted)
+                }
+            } catch {
+                print("Error deleting items \(error)")
+            }
+        }
     }
 
 

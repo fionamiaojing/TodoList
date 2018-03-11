@@ -8,12 +8,15 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
-class CategoryTableViewController: UITableViewController {
+class CategoryTableViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     
     var categoryArray: Results<Category>?
+    
+    var colorArray : [UIColor] = [FlatRed(),FlatPowderBlue(),FlatYellow(),FlatSand(),FlatLime(),FlatWatermelon(),FlatSkyBlue(),FlatCoffee(),FlatOrange(),FlatMint()]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +25,7 @@ class CategoryTableViewController: UITableViewController {
 
     }
 
-    //MARK - TableView DataSource Methods
+    //MARK: - TableView DataSource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //means if category isnot nill (true) return categoryArray.count esle return 1
@@ -30,14 +33,21 @@ class CategoryTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
         
-        cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No Categories Added Yet!"
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        
+        if let category = categoryArray?[indexPath.row] {
+            cell.textLabel?.text = category.name
+            
+            guard let categoryColor = UIColor(hexString: category.color) else {fatalError()}
+            cell.backgroundColor = categoryColor
+            cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
+        }
         
         return cell
     }
     
-    //MARK - TableView Delegate Methods
+    //MARK: - TableView Delegate Methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
@@ -53,7 +63,7 @@ class CategoryTableViewController: UITableViewController {
     }
     
     
-    //MARK - Data Manipulate Methods
+    //MARK: - Data Manipulate Methods
     
     func save(category: Category) {
         do {
@@ -74,7 +84,22 @@ class CategoryTableViewController: UITableViewController {
         tableView.reloadData()
     }
     
-    //MARK - Add Button Function
+    //MARK: - delete data from Swipe
+    
+    override func updateModel(at indexPath: IndexPath) {
+        //since categoryArray is optional, use if function to test if it is nill
+        if let categoryToBeDeleted = self.categoryArray?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(categoryToBeDeleted)
+                }
+            } catch {
+                print("Error deleting categories \(error)")
+            }
+        }
+    }
+    
+    //MARK: - Add Button Function
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
         var textField = UITextField()
@@ -87,6 +112,13 @@ class CategoryTableViewController: UITableViewController {
             
             if textField.text?.isEmpty != true {
                 newCategory.name = textField.text!
+                
+//                newCategory.color = UIColor.randomFlat.hexValue()
+                if self.categoryArray?.count != nil {
+                    newCategory.color = self.colorArray[(self.categoryArray?.count)!].hexValue()
+                } else {
+                    newCategory.color = self.colorArray[0].hexValue()
+                }
                 self.save(category: newCategory)
             } else {
                 print("Invalid input")
@@ -105,13 +137,16 @@ class CategoryTableViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
         
     }
-    
-
-    
-    
-
-    
-
-    
 
 }
+
+
+
+
+
+
+
+
+
+
+
